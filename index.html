@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+    integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <link rel="stylesheet" href="./style.css">
+  <title>Document</title>
+</head>
+
+<body>
+
+  <!-- title -->
+  <div class="jumbotron jumbotron-fluid text-center">
+    <div class="container">
+      <h1 class="display-4">Weather Dashboard</h1>
+    </div>
+  </div>
+
+  <!-- main -->
+  <div class="container">
+
+    <div class="row">
+
+      <div class="col-6 col-md-4 card bg-light mb-3" style="max-width: 18rem;">
+
+        <h5>Search for a City:</h5>
+
+        <div class="input-group mb-3">
+          <input id="searchInput" type="text" class="form-control" placeholder="City Name" class="input-group-append">
+          <button id="searchBtn" type="button" class="btn btn-secondary">Search City</button>
+        </div>
+
+        <hr>
+
+        <ul id="searchHistory" class="list-group">
+        </ul>
+
+      </div>
+
+      <div class="col-12 col-md-8 card bg-light mb-3" style="max-width: 72rem;">
+
+        <div id="currentCity" class="row">
+
+        </div>
+        <div id="forecast" class="row">
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+
+  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+    integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+    integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+    crossorigin="anonymous"></script>
+  <script>
+
+    document.getElementById('searchBtn').addEventListener('click', event => {
+      event.preventDefault()
+
+      if (document.getElementById('searchInput').value.length > 1) {
+        let city = document.getElementById('searchInput').value
+        fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=94ffa4a34e5045f0fb8f1ff3a338a400`)
+          .then(r => r.json())
+          .then(data => {
+            currentSearch = data
+            renderHistory()
+            renderCurrent()
+            console.log(data)
+          })
+      }
+
+      function renderHistory() {
+        let listItem = document.createElement('li')
+        listItem.className = 'list-group-item'
+        listItem.innerHTML = `
+        <li>
+          ${currentSearch.city.name}
+        </li>
+        `
+        document.getElementById('searchInput').value = ''
+        document.getElementById('searchHistory').append(listItem)
+      }
+
+      function renderCurrent() {
+        let tempF = (currentSearch.list[0].main.temp - 273.15) * 1.80 + 32
+        tempF = Math.floor(tempF)
+        let date = new Date()
+
+        let currentForecast = document.createElement('div')
+        currentForecast.className = 'card-body'
+        currentForecast.innerHTML = `
+        <h3>
+          ${currentSearch.city.name}
+        </h3>
+        <p>
+          Date: ${date}
+        </p>
+        <p>
+          Temperature: ${tempF}°F
+        </p>
+        <p>
+          Humidity: ${currentSearch.list[0].main.humidity}%
+        </p>
+        <p>
+          Wind Speed: ${currentSearch.list[0].wind.speed}mph
+        </p>
+        `
+        document.getElementById('currentCity').innerHTML = ''
+        document.getElementById('currentCity').append(currentForecast)
+
+        document.getElementById('forecast').innerHTML = renderForecastItem(0) + renderForecastItem(8) + renderForecastItem(16) + renderForecastItem(24) + renderForecastItem(32)
+      }
+
+      function renderForecastItem(forecastIndex) {
+        let tempF = (currentSearch.list[0].main.temp - 273.15) * 1.80 + 32
+        tempF = Math.floor(tempF)
+        return `
+        <div class = 'card text-white bg-primary mb-3' style= 'max-width: 15 rem;'>
+        <div class = 'card-header'>${currentSearch.list[forecastIndex].dt_txt}</div>
+        <div class = 'card-body'>
+          <h5 class = 'card-title'><img src='http://openweathermap.org/img/wn/${currentSearch.list[forecastIndex].weather[0].icon}@2x.png'></h5>
+          <p class = 'card-text'>
+            Temperature: ${tempF}°F
+          </p>
+          <p class = 'card-text'>
+            Humidity: ${currentSearch.list[forecastIndex].main.humidity}%
+          </p>
+        </div>
+        </div>
+        `
+        document.getElementById('forecast').innerHTML = ''
+      }
+
+    })  
+  </script>
+
+</body>
+
+</html>
