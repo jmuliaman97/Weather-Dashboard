@@ -24,7 +24,7 @@
 
     <div class="row">
 
-      <div class="col-6 col-md-4 card bg-light mb-3" style="max-width: 18rem;">
+      <div class="col-lg-3 card bg-light mb-3" style="max-width: 18rem;">
 
         <h5>Search for a City:</h5>
 
@@ -40,7 +40,7 @@
 
       </div>
 
-      <div class="col-12 col-md-8 card bg-light mb-3" style="max-width: 72rem;">
+      <div class="col-lg-9 card bg-light mb-3" style="max-width: 72rem;">
 
         <div id="currentCity" class="row">
 
@@ -66,11 +66,15 @@
     crossorigin="anonymous"></script>
   <script>
 
+    // add an event listener for the search button
     document.getElementById('searchBtn').addEventListener('click', event => {
       event.preventDefault()
 
+      // make sure to run fetch request if user actually put something in to the search input
       if (document.getElementById('searchInput').value.length > 1) {
+        // make function for city
         let city = document.getElementById('searchInput').value
+        // make a fetch request to grab the api from the openweathermap
         fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=94ffa4a34e5045f0fb8f1ff3a338a400`)
           .then(r => r.json())
           .then(data => {
@@ -81,7 +85,9 @@
           })
       }
 
+      // make a function to render history
       function renderHistory() {
+        // create element from list item
         let listItem = document.createElement('li')
         listItem.className = 'list-group-item'
         listItem.innerHTML = `
@@ -89,15 +95,20 @@
           ${currentSearch.city.name}
         </li>
         `
+        // empty search input 
         document.getElementById('searchInput').value = ''
+        // append list item
         document.getElementById('searchHistory').append(listItem)
       }
 
+      // make a function to render current city
       function renderCurrent() {
+        // make a variable for temperature and change kelvin to fahrenheit
         let tempF = (currentSearch.list[0].main.temp - 273.15) * 1.80 + 32
         tempF = Math.floor(tempF)
         let date = new Date()
 
+        // create element for current forecast
         let currentForecast = document.createElement('div')
         currentForecast.className = 'card-body'
         currentForecast.innerHTML = `
@@ -117,17 +128,21 @@
           Wind Speed: ${currentSearch.list[0].wind.speed}mph
         </p>
         `
+        // empty current city
         document.getElementById('currentCity').innerHTML = ''
+        // append currentForecast
         document.getElementById('currentCity').append(currentForecast)
 
+        // make function for the next 5 days of the forecast
         document.getElementById('forecast').innerHTML = renderForecastItem(0) + renderForecastItem(8) + renderForecastItem(16) + renderForecastItem(24) + renderForecastItem(32)
       }
 
+      // make a function to render the future forecast
       function renderForecastItem(forecastIndex) {
         let tempF = (currentSearch.list[0].main.temp - 273.15) * 1.80 + 32
         tempF = Math.floor(tempF)
         return `
-        <div class = 'card text-white bg-primary mb-3' style= 'max-width: 15 rem;'>
+        <div class = 'card text-white bg-primary mb-3' style= 'max-width: 18 rem;'>
         <div class = 'card-header'>${currentSearch.list[forecastIndex].dt_txt}</div>
         <div class = 'card-body'>
           <h5 class = 'card-title'><img src='http://openweathermap.org/img/wn/${currentSearch.list[forecastIndex].weather[0].icon}@2x.png'></h5>
@@ -140,6 +155,7 @@
         </div>
         </div>
         `
+        // empty forecast of the city
         document.getElementById('forecast').innerHTML = ''
       }
 
