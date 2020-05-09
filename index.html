@@ -6,8 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
     integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-  <link rel="stylesheet" href="./style.css">
-  <title>Document</title>
+  
+  <title>Weather App</title>
 </head>
 
 <body>
@@ -24,6 +24,7 @@
 
     <div class="row">
 
+      <!-- left column to search for the city -->
       <div class="col-lg-3 card bg-light mb-3" style="max-width: 18rem;">
 
         <h5>Search for a City:</h5>
@@ -40,6 +41,7 @@
 
       </div>
 
+      <!-- right column to display current city weather and 5 day forecast -->
       <div class="col-lg-9 card bg-light mb-3" style="max-width: 72rem;">
 
         <div id="currentCity" class="row">
@@ -64,103 +66,7 @@
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
     integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
     crossorigin="anonymous"></script>
-  <script>
-
-    // add an event listener for the search button
-    document.getElementById('searchBtn').addEventListener('click', event => {
-      event.preventDefault()
-
-      // make sure to run fetch request if user actually put something in to the search input
-      if (document.getElementById('searchInput').value.length > 1) {
-        // make function for city
-        let city = document.getElementById('searchInput').value
-        // make a fetch request to grab the api from the openweathermap
-        fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=94ffa4a34e5045f0fb8f1ff3a338a400`)
-          .then(r => r.json())
-          .then(data => {
-            currentSearch = data
-            renderHistory()
-            renderCurrent()
-            console.log(data)
-          })
-      }
-
-      // make a function to render history
-      function renderHistory() {
-        // create element from list item
-        let listItem = document.createElement('li')
-        listItem.className = 'list-group-item'
-        listItem.innerHTML = `
-        <li>
-          ${currentSearch.city.name}
-        </li>
-        `
-        // empty search input 
-        document.getElementById('searchInput').value = ''
-        // append list item
-        document.getElementById('searchHistory').append(listItem)
-      }
-
-      // make a function to render current city
-      function renderCurrent() {
-        // make a variable for temperature and change kelvin to fahrenheit
-        let tempF = (currentSearch.list[0].main.temp - 273.15) * 1.80 + 32
-        tempF = Math.floor(tempF)
-        let date = new Date()
-
-        // create element for current forecast
-        let currentForecast = document.createElement('div')
-        currentForecast.className = 'card-body'
-        currentForecast.innerHTML = `
-        <h3>
-          ${currentSearch.city.name}
-        </h3>
-        <p>
-          Date: ${date}
-        </p>
-        <p>
-          Temperature: ${tempF}°F
-        </p>
-        <p>
-          Humidity: ${currentSearch.list[0].main.humidity}%
-        </p>
-        <p>
-          Wind Speed: ${currentSearch.list[0].wind.speed}mph
-        </p>
-        `
-        // empty current city
-        document.getElementById('currentCity').innerHTML = ''
-        // append currentForecast
-        document.getElementById('currentCity').append(currentForecast)
-
-        // make function for the next 5 days of the forecast
-        document.getElementById('forecast').innerHTML = renderForecastItem(0) + renderForecastItem(8) + renderForecastItem(16) + renderForecastItem(24) + renderForecastItem(32)
-      }
-
-      // make a function to render the future forecast
-      function renderForecastItem(forecastIndex) {
-        let tempF = (currentSearch.list[0].main.temp - 273.15) * 1.80 + 32
-        tempF = Math.floor(tempF)
-        return `
-        <div class = 'card text-white bg-primary mb-3' style= 'max-width: 18 rem;'>
-        <div class = 'card-header'>${currentSearch.list[forecastIndex].dt_txt}</div>
-        <div class = 'card-body'>
-          <h5 class = 'card-title'><img src='http://openweathermap.org/img/wn/${currentSearch.list[forecastIndex].weather[0].icon}@2x.png'></h5>
-          <p class = 'card-text'>
-            Temperature: ${tempF}°F
-          </p>
-          <p class = 'card-text'>
-            Humidity: ${currentSearch.list[forecastIndex].main.humidity}%
-          </p>
-        </div>
-        </div>
-        `
-        // empty forecast of the city
-        document.getElementById('forecast').innerHTML = ''
-      }
-
-    })  
-  </script>
+  <script src="./script.js"></script>
 
 </body>
 
